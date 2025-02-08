@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Base64 Converter</title>
+</head>
+<body>
+    <input type="file" id="fileInput" />
+    <p id="output"></p>
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function() {
+                const base64String = reader.result.split(',')[1];
+                document.getElementById('output').innerText = base64String;
+                // Thunkable WebViewer.postMessage ile app'e base64 göndermek için:
+                if (window.ReactNativeWebView) {
+                    window.ReactNativeWebView.postMessage(base64String);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
