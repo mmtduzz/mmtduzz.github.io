@@ -2,8 +2,8 @@
 
 ## Genel Bakış
 
-Kişisel kullanım için, yalnızca tek bir telefonda çalışacak, tarayıcı tabanlı bir bütçe takip uygulaması.
-Veriler telefonda (localStorage) saklanır; sunucu, hesap veya internet bağlantısı gerekmez.
+Kişisel kullanım için, yalnızca iPhone'da çalışacak, tarayıcı tabanlı bir bütçe takip uygulaması.
+Veriler telefonda (`localStorage`) saklanır; sunucu, hesap veya internet bağlantısı gerekmez.
 Tek HTML dosyası olarak çalışır — kurulum, derleme adımı veya bağımlılık yoktur.
 
 ---
@@ -34,7 +34,8 @@ Her gelir veya gider eklenirken **aşağıdaki alanlar her zaman istenir:**
 1. **Ad** — serbest metin (örn. "Maaş", "Kira", "NGLS")
 2. **Tutar** — sayısal, TRY (₺)
 3. **Tarih** — takvim seçici; ayın hangi gününe denk geldiğini belirler
-4. **Tekrar Türü** — `Aylık` veya `Tek Seferlik` (toggle/seçim)
+4. **Tekrar Türü** — `Aylık` veya `Tek Seferlik`
+5. **Not** — isteğe bağlı kısa not (örn. "5 taksit kaldı", "zam geldi")
 
 ---
 
@@ -48,8 +49,9 @@ Her gelir veya gider eklenirken **aşağıdaki alanlar her zaman istenir:**
 | Tutar | TRY ₺ |
 | Tarih | Takvim seçici (o ay içindeki gün) |
 | Tekrar | Aylık / Tek Seferlik |
-| Son Ödeme Tarihi | Yalnızca Aylık seçilirse görünür (toggle + ay-yıl seçici) |
+| Son Tarih | Yalnızca Aylık seçilirse görünür (toggle + ay-yıl seçici) |
 | Başlangıç Tarihi | Yalnızca Aylık seçilirse; tekrarın başladığı ay |
+| Not | İsteğe bağlı kısa not |
 
 ---
 
@@ -63,9 +65,10 @@ Her gelir veya gider eklenirken **aşağıdaki alanlar her zaman istenir:**
 | Tutar | TRY ₺ |
 | Tarih | Takvim seçici (o ay içindeki gün) |
 | Tekrar | Aylık / Tek Seferlik |
-| Son Ödeme Tarihi | Yalnızca Aylık seçilirse görünür |
+| Son Tarih | Yalnızca Aylık seçilirse görünür |
 | Başlangıç Tarihi | Yalnızca Aylık seçilirse |
 | **Kategori** | Aşağıdaki seçeneklerden biri (gerekli) |
+| Not | İsteğe bağlı kısa not |
 
 ### Gider Kategorileri
 
@@ -88,7 +91,7 @@ Kategori olarak **Kredi Kartı** seçildiğinde ek bölüm açılır:
 | Alan | Açıklama |
 |---|---|
 | Son Ödeme Günü | Ayın hangi günü ödeme yapılacak (1–31) |
-| Hatırlatma | Toggle; açıksa son ödeme tarihinden 3 gün önce uygulama başlatıldığında uyarı gösterir |
+| Hatırlatma | Toggle; açıksa son ödeme tarihinden 3 gün önce uygulama açılışında uyarı banner'ı gösterir |
 
 ---
 
@@ -124,49 +127,78 @@ Tek seferlik kayıtlarda yalnızca `Sil` ve `İptal` gösterilir.
 
 ---
 
-## Gelir Sekmesi (Ekran Görünümü)
+## Gelir / Gider Listesi (Ekran Görünümü)
 
 ```
 ┌─────────────────────────────────────────┐
 │ Gelecek           161,000₺          ▾  │
 │─────────────────────────────────────────│
-│ ◉ LEVENT          12,000₺    Paz, 5    │
-│ ◉ Bt              20,000₺    Paz, 5    │
+│ ◉ LEVENT          12,000₺    Paz, 5    │  ← ◉ = ödenmedi / ✓ = ödendi
+│ ✓ Bt              20,000₺    Paz, 5    │  ← ödendi, soluklaşır
 │ ◉ Gelir           85,000₺    Paz, 5    │
-│ ◉ Tuğçe           14,000₺    Sal, 7    │
-│ ◉ ES              30,000₺    Sal, 7    │
 │─────────────────────────────────────────│
-│ Toplam Gelir       Kalan Gelir          │
-│ 161,000₺           161,000₺            │
+│ Ödenen    20,000₺    Kalan    141,000₺  │
 └─────────────────────────────────────────┘
 ```
 
-- Her satır: ad, tutar, haftanın günü + ayın günü
-- Satıra tıklayınca düzenleme formu açılır
+- Her satır: sol ikon (ödendi/bekliyor), ad, tutar, gün
+- **İkon'a dokunmak**: o ay için "ödendi/alındı" işaretini toggle eder
+- **Satıra dokunmak**: düzenleme formunu açar
+- Ödenen kalemler hafifçe soluklaşır
+- Footer: "Ödenen" ve "Kalan" ayrı gösterilir
 - Liste ayın gününe göre sıralıdır
-
----
-
-## Gider Sekmesi (Ekran Görünümü)
-
-Gelir sekmesiyle aynı yapı; gider kalemleri listelenir.
 
 ---
 
 ## Özet Sekmesi
 
-### Kalan Gelir Yüzdesi (Yarım Halka Grafik)
-
-```
-Gelir     161,000₺   [●●●●●●●●○○]  %55
-Gider      73,107₺
-─────────────────
-Kalan      87,893₺
-```
+### Aylık Kalan Gelir Grafiği (Yarım Halka)
 
 - Mavi = kalan gelir yüzdesi
 - Kırmızı = giderlerin gelire oranı
-- Grafiğin ortasında yüzde değeri
+- Ortada yüzde değeri
+
+### Yıllık Trend Grafiği
+
+- Seçili yıla ait 12 ayın tüm gelir ve giderlerini yan yana çubuk grafik olarak gösterir.
+- Ay etiketleri (Oca, Şub … Ara) ve rakamlar.
+- Gelir = mavi çubuk, Gider = kırmızı çubuk.
+- Bir aya dokunulunca o aya geçer.
+
+### Kategori Bazlı Gider Dağılımı
+
+- Mevcut ay için hangi kategoriye ne kadar harcandığını yatay çubuk grafikle gösterir.
+- Bütçe limiti varsa üst sınır çizgisi gösterilir.
+
+---
+
+## Ödendi / Alındı Takibi *(Eklenen Özellik)*
+
+Her liste satırındaki sol ikonuna dokunmak o kalemi o ay için "tamamlandı" olarak işaretler.
+
+- İşaret, o ay için override'da saklanır (`paid: true`).
+- Görsel: ödenmemiş = teal boş halka; ödendi = yeşil onay işareti, satır soluklaşır.
+- Footer'da "Ödenen" ve "Kalan" ayrı hesaplanır.
+- Aylık özette: "Planlanan" vs "Gerçekleşen" farkı görülür.
+
+---
+
+## Kategori Bütçe Limiti *(Eklenen Özellik)*
+
+Her kategori için isteğe bağlı aylık harcama üst sınırı tanımlanabilir.
+
+- Ayarlar sekmesinde her kategori için aylık limit girilebilir.
+- Gider listesinde ilgili kategori limitin **%80'ini** geçince turuncu uyarı noktası gösterilir.
+- Limiti **aşınca** kırmızı uyarı gösterilir.
+- Özet sekmesindeki kategori grafiğinde limit çizgisi görünür.
+
+---
+
+## Karanlık Mod *(Eklenen Özellik)*
+
+- iOS sistem teması (`prefers-color-scheme: dark`) otomatik algılanır.
+- Tüm renkler karanlık temaya uyarlanır; ayrı bir toggle gerektirmez.
+- Ayarlar'dan manuel geçiş de yapılabilir (Sistem / Açık / Koyu).
 
 ---
 
@@ -179,13 +211,27 @@ Kalan      87,893₺
 
 ---
 
+## PWA — Ana Ekrana Ekle *(Eklenen Özellik)*
+
+iPhone'da Safari üzerinden "Ana Ekrana Ekle" ile tam ekran uygulama gibi çalışır:
+
+- `apple-mobile-web-app-capable` meta etiketi ile Safari araç çubuğu gizlenir.
+- `apple-mobile-web-app-status-bar-style: black-translucent` — durum çubuğu şeffaf olur.
+- Uygulama ikonu için inline SVG tabanlı `apple-touch-icon` tanımlanır.
+- Güvenli alan boşlukları (`env(safe-area-inset-*)`) ile Dynamic Island / çentik / home göstergesi ekrana taşmaz.
+- İlk açılışta "Ana Ekrana Ekle" adımlarını anlatan tek seferlik bir banner gösterilir.
+
+---
+
 ## Ayarlar Sekmesi
 
 | Seçenek | Açıklama |
 |---|---|
+| Tema | Sistem / Açık / Koyu |
+| Kategori Bütçe Limitleri | Her kategori için aylık üst sınır |
 | Veriyi Dışa Aktar | Tüm kayıtları JSON olarak indirir |
 | Veriyi İçe Aktar | JSON dosyasından veri yükler |
-| Tüm Verileri Sil | LocalStorage'ı temizler (onay ister) |
+| Tüm Verileri Sil | localStorage temizler (onay diyalogu) |
 
 ---
 
@@ -193,14 +239,15 @@ Kalan      87,893₺
 
 - **Tek HTML dosyası** — `butce.html` adıyla repo köküne eklenir.
 - Harici kütüphane, CDN, paket yöneticisi **kullanılmaz**.
-- Veriler `localStorage` içinde `butce_entries` anahtarıyla JSON olarak saklanır.
-- iOS Safari ve Android Chrome ile uyumlu olmalı.
-- Mobil öncelikli tasarım: dokunma hedefleri en az 44×44 px.
+- Veriler `localStorage` içinde `butce_v1` anahtarıyla JSON olarak saklanır.
+- **Yalnızca iPhone / iOS Safari** hedeflidir; `webkit-` prefix'ler ve iOS safe area inset'leri kullanılır.
+- Dokunma hedefleri minimum 44×44 px (Apple HIG standardı).
 - Tutar maskeleme (👁 butonu): tüm tutarları `•••` ile gizler/gösterir.
+- `-webkit-tap-highlight-color: transparent` ile iOS varsayılan dokunma efekti kaldırılır.
 
 ---
 
-## Veri Modeli (Özet)
+## Veri Modeli
 
 ```json
 {
@@ -215,16 +262,38 @@ Kalan      87,893₺
   "category": "kira",
   "creditCardDueDay": null,
   "reminderEnabled": false,
+  "note": "İsteğe bağlı not",
   "overrides": {
-    "2026-04": { "amount": 16000 },
-    "2026-05": { "deleted": true }
+    "2026-04": {
+      "amount": 16000,
+      "paid": true,
+      "deleted": false
+    }
   }
 }
 ```
 
 ### Override Mantığı
 
-- `overrides["YYYY-MM"]` o aya özgü değişiklikleri tutar.
-- `deleted: true` → o ay kaydı göstermez.
-- `amount`, `dayOfMonth`, `name` → o ay için geçerli değeri override eder.
-- "Bu tarihten itibaren" düzenlemesi: eski kaydın `endYM`'i önceki aya set edilir, yeni kayıt `startYM = düzenleme ayı` olarak oluşturulur.
+| Alan | Açıklama |
+|---|---|
+| `deleted: true` | O ay kaydı listeden gizler |
+| `paid: true` | O ay için "ödendi/alındı" işareti |
+| `amount` | O aya özgü tutar override'ı |
+| `dayOfMonth` | O aya özgü gün override'ı |
+| `name` | O aya özgü ad override'ı |
+
+"Bu tarihten itibaren" düzenlemesi: eski kaydın `endYM`'i önceki aya set edilir, yeni kayıt `startYM = düzenleme ayı` olarak oluşturulur.
+
+---
+
+## Eklenen Özelliklerin Özeti
+
+| # | Özellik | Gerekçe |
+|---|---|---|
+| 1 | **PWA / Ana Ekrana Ekle** | iPhone'da tam ekran, native uygulama hissi; çentik/home bar desteği |
+| 2 | **Ödendi / Alındı Takibi** | Planlanan vs gerçekleşen ayrımı; ne ödendiğini takip etmek için |
+| 3 | **Kategori Bütçe Limiti** | Hangi kategoride ne kadar harcandığını görsel olarak kontrol altında tutmak |
+| 4 | **Karanlık Mod** | iOS sistem temasına otomatik uyum; gece kullanım konforu |
+| 5 | **Yıllık Trend Grafiği** | 12 aylık gelir/gider örüntüsünü tek bakışta görmek |
+| 6 | **Not Alanı** | Her kaleme "5 taksit kaldı", "zam bekleniyor" gibi hatırlatıcı not eklemek |
